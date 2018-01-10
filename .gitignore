@@ -1,0 +1,139 @@
+# Prerequisites
+*.d
+*.dat
+*.msh
+*.geo
+*.txt
+*.sh
+*.vtu
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# PyDev specific (Python IDE for Eclipse)
+*.pydevproject
+
+# CDT-specific (C/C++ Development Tooling)
+.cproject
+.project
+
+# Java annotation processor (APT)
+.factorypath
+
+# PDT-specific (PHP Development Tools)
+.buildpath
+
+# sbteclipse plugin
+.target
+
+# Tern plugin
+.tern-project
+
+# TeXlipse plugin
+.texlipse
+
+# STS (Spring Tool Suite)
+.springBeans
+
+# Code Recommenders
+.recommenders/
+
+# Scala IDE specific (Scala & Java development for Eclipse)
+.cache-main
+.scala_dependencies
+.worksheet
+
+# Executable files should be ignored
+Mesh_Generator/Mesh_Reordering/Mesh_Reordering
+Mesh_Generator/Mesh_Reordering/triangulation_rcm
+Mesh_Generator/Structured_Mesh/meshGenerator
+Mesh_Generator/Unstructured_Mesh/gmsh2Mesh
+Parallel_Preprocess/Preprocess
+01_SS_Transport_Equation/2D/01_CommonFiles/SSTranspEquation
+02_Transport_Equation/2D/01_CommonFiles/TranspEquation
+03_Euler_Equations/2D/01_CommonFiles/EulerEquations2D
+
+# Our files that should not be ignored
+!libmc60.a
+!hsl_mc73.a
+!hsl_mc73d.o
+!libmc64.a
+!mc64d.o
+!00_CommonFiles/Solvers_and_Preconditioners/pardiso/libpardiso500-GNU481-X86-64.so
+!00_CommonFiles/Solvers_and_Preconditioners/pardiso/libpardiso500-INTEL1301-X86-64.so
+!00_CommonFiles/Solvers_and_Preconditioners/pardiso/libpardiso500-MPI-GNU450-X86-64.so
+!00_CommonFiles/Solvers_and_Preconditioners/pardiso/libpardiso500-MPI-GNU463-X86-64.so
+!00_CommonFiles/Solvers_and_Preconditioners/pardiso/libpardiso500-MPI-INTEL1301-X86-64.so
+
+# input and output data files
+*.dat
+*.pvd
+*.vts
+*.txt
+*.geo
+*.msh

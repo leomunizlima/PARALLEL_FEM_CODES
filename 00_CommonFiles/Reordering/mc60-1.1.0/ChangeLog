@@ -1,0 +1,21 @@
+2012-10-26  Jennifer Scott
+Version 1.1.0. Fix error in RCM.
+Previous version was ok but failed to order the entries in each level set by
+order of increasing current degree. Now fixed. New subroutine MC60Q added
+to do this. For some examples, get improved results (but not all cases).
+
+2004-07-17
+Version 1.0.0. Version numbering added.
+
+2004-07-17
+MC60C/CD. Changed PAIR(2,NSUP/2) to PAIR(2,*) (problem previusly if NSUP=1).
+
+2002-02-20
+Cosmetic changes applied to reduce single/double differences.
+
+2002-02-07
+	* MC60G/GD amended to return mean frontal matrix size.
+	* MC60F/FD corrected.
+
+1998-01-16
+Original version.
