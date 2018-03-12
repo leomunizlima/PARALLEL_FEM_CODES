@@ -1,4 +1,4 @@
-#include "SSNavierStokesEquations.h"
+#include "NavierStokesEquations.h"
 #include "../../../00_CommonFiles/Allocation_Operations/allocations.h"
 #include "../../../00_CommonFiles/IO_Operations/io.h"
 #include "../../../00_CommonFiles/BLAS_Operations/ourBLAS.h"
@@ -10,7 +10,7 @@ int Build_K_F_SUPG_PSPG(ParametersType *Parameters, MatrixDataType *MatrixData, 
 	int i, NEQ, nel;//, op;
 	int E, J1, J2, J3;
 	//double Uref, Lref;
-	double Re;
+	double Re, x, y;
 	double TwoA, invArea, Area, tau, h, visc, rho, invrho, nu, unorm, auxtau, tau_l; 
 	double third=1.0/3.0, sixth = 1.0/6.0, twelfth = 1.0/12.0;
 	double y23, y31, y12, x32, x13, x21, X[3], Y[3], Ke[9][9], Fe[9], ux1, ux2, ux3, uy1, uy2, uy3, ux, uy, duxdx, duxdy, duydx, duydy;
@@ -113,22 +113,28 @@ int Build_K_F_SUPG_PSPG(ParametersType *Parameters, MatrixDataType *MatrixData, 
 
 		//*************Calculation of tau_SUPG=tau_PSPG=tau*********
 		Re = Parameters->ReynoldsNumber;		
-		//h = sqrt( 4*Area/PI );		
-		h=sqrt(TwoA);		
+		h = sqrt( 4*Area/PI );		
 		visc =1./Re;
 		rho = 1.;		
+		//visc = 1./sqrt(Re);
+		//rho = sqrt(Re);		
 
+		//visc = (*Viscosity)(); 
+		//rho = (*Rho)();
+		//Uref = (*U_ref)();
+		//Lref = (*L_ref)();
 		invrho = 1.0/rho;
 		nu = visc/rho;
+		//h = sqrt( 4*Area/PI );		
 		unorm = sqrt( ux*ux + uy*uy );
-		auxtau = ( 2.0*unorm/h )*( 2.0*unorm/h ) + 9.0*( 4.0*nu/(h*h) )*( 4.0*nu/(h*h) );
+		auxtau = ( 2*unorm/h )*( 2*unorm/h ) + 9*( 4*nu/(h*h) )*( 4*nu/(h*h) );
 		auxtau = sqrt( auxtau);
 		tau = 1.0/auxtau;
 		//tau=tau_SUPG=tau_PSPG
 		
 		//*************Calculation of tau_LSIC stabilization*********
-		//tau_l = 0.5*h*unorm ;
-		tau_l = sqrt(nu*nu + (0.5*h*unorm)*(0.5*h*unorm));
+		tau_l = 0.5*h*unorm ;
+		
 	
 		//************Matrices of the Galerkin formulation*************
 
@@ -353,22 +359,69 @@ int Build_K_F_SUPG_PSPG(ParametersType *Parameters, MatrixDataType *MatrixData, 
 		Npphi31 = tau*sixth*( duxdx*y12 + duydx*x21 );
 		Npphi32 = tau*sixth*( duxdy*y12 + duydy*x21 );
 	
-		//*********************Fonte********************
+		//****************************Font***********************************
+/*		fx1 = (*Font)(X[0],Y[0],1);*/
+/*		fx2 = (*Font)(X[1],Y[1],1);*/
+/*		fx3 = (*Font)(X[2],Y[2],1);*/
+/*		*/
+/*		fy1 = (*Font)(X[0],Y[0],2);*/
+/*		fy2 = (*Font)(X[1],Y[1],2);*/
+/*		fy3 = (*Font)(X[2],Y[2],2);*/
 
-		fx1 = FemFunctions->f1ext(X[0],Y[0]);
-		fy1 = FemFunctions->f2ext(X[0],Y[0]);
-
-		fx2 = FemFunctions->f1ext(X[1],Y[1]);
-		fy2 = FemFunctions->f2ext(X[1],Y[1]);
-
-		fx3 = FemFunctions->f1ext(X[2],Y[2]);
-		fy3 = FemFunctions->f2ext(X[2],Y[2]);
+		fx1 = 0.0;
+		fx2 = 0.0;
+		fx3 = 0.0;
 		
+		fy1 = 0.0;
+		fy2 = 0.0;
+		fy3 = 0.0;
+
+
+		//*********************Fonte Sol Exata Conhecida********************
+		x = X[0];
+		y = Y[0];
+		
+	/*	fx1 = 2*x + pow(x,4)*(1.2 - 2.4*y) + pow(x,3)*(-2.4 + 4.8*y) + 
+ y*(-0.4 + 1.2*y - 0.8*pow(y,2)) + 8*pow((-1 + x),3)*pow(x,3)*(-1 + 2*x)*pow(y,2)*pow((1 - 3*y + 2*pow(y,2)),2) + x*y*(2.4 - 7.2*y + 4.8*pow(y,2)) - 
+ 4*pow((-1 + x),2)*pow(x,3)*(1 - 3*x + 2*pow(x,2))*pow((-1 + y),2)*pow(y,2)*(1 - 6*y + 6*pow(y,2)) + pow(x,2)*(1.2 - 4.8*y + 7.2*pow(y,2) - 4.8*pow(y,3));
+		
+		fy1 =	-2*y - 1.2*pow((1 - y),2)*pow(y,2) + 
+ 8*pow(x,2)*pow((1 - 3*x + 2*pow(x,2)),2)*pow((-1 + y),3)*pow(y,3)*(-1 + 2*y) + 
+ pow(x,2)*(-1.2 + 7.2*y - 7.2*pow(y,2)) - 
+ 4*pow((-1 + x),2)*pow(x,2)*(1 - 6*x + 6*pow(x,2))*pow((-1 + y),2)*pow(y,3)*(1 - 3*y + 2*pow(y,2)) + pow(x,3)*(0.8 - 4.8*y + 4.8*pow(y,2)) + x*(0.4 - 2.4*y + 4.8*pow(y,2) - 4.8*pow(y,3) + 2.4*pow(y,4));	
+
+		x = X[1];
+		y = Y[1];
+		
+		fx2 = 2*x + pow(x,4)*(1.2 - 2.4*y) + pow(x,3)*(-2.4 + 4.8*y) + 
+ y*(-0.4 + 1.2*y - 0.8*pow(y,2)) + 8*pow((-1 + x),3)*pow(x,3)*(-1 + 2*x)*pow(y,2)*pow((1 - 3*y + 2*pow(y,2)),2) + x*y*(2.4 - 7.2*y + 4.8*pow(y,2)) - 
+ 4*pow((-1 + x),2)*pow(x,3)*(1 - 3*x + 2*pow(x,2))*pow((-1 + y),2)*pow(y,2)*(1 - 6*y + 6*pow(y,2)) + pow(x,2)*(1.2 - 4.8*y + 7.2*pow(y,2) - 4.8*pow(y,3));
+		
+		fy2 =	-2*y - 1.2*pow((1 - y),2)*pow(y,2) + 
+ 8*pow(x,2)*pow((1 - 3*x + 2*pow(x,2)),2)*pow((-1 + y),3)*pow(y,3)*(-1 + 2*y) + 
+ pow(x,2)*(-1.2 + 7.2*y - 7.2*pow(y,2)) - 
+ 4*pow((-1 + x),2)*pow(x,2)*(1 - 6*x + 6*pow(x,2))*pow((-1 + y),2)*pow(y,3)*(1 - 3*y + 2*pow(y,2)) + pow(x,3)*(0.8 - 4.8*y + 4.8*pow(y,2)) + x*(0.4 - 2.4*y + 4.8*pow(y,2) - 4.8*pow(y,3) + 2.4*pow(y,4));
+		
+		x = X[2];
+		y = Y[2];
+		
+		fx3 = 2*x + pow(x,4)*(1.2 - 2.4*y) + pow(x,3)*(-2.4 + 4.8*y) + 
+ y*(-0.4 + 1.2*y - 0.8*pow(y,2)) + 8*pow((-1 + x),3)*pow(x,3)*(-1 + 2*x)*pow(y,2)*pow((1 - 3*y + 2*pow(y,2)),2) + x*y*(2.4 - 7.2*y + 4.8*pow(y,2)) - 
+ 4*pow((-1 + x),2)*pow(x,3)*(1 - 3*x + 2*pow(x,2))*pow((-1 + y),2)*pow(y,2)*(1 - 6*y + 6*pow(y,2)) + pow(x,2)*(1.2 - 4.8*y + 7.2*pow(y,2) - 4.8*pow(y,3));
+		
+		fy3 =	-2*y - 1.2*pow((1 - y),2)*pow(y,2) + 
+ 8*pow(x,2)*pow((1 - 3*x + 2*pow(x,2)),2)*pow((-1 + y),3)*pow(y,3)*(-1 + 2*y) + 
+ pow(x,2)*(-1.2 + 7.2*y - 7.2*pow(y,2)) - 
+ 4*pow((-1 + x),2)*pow(x,2)*(1 - 6*x + 6*pow(x,2))*pow((-1 + y),2)*pow(y,3)*(1 - 3*y + 2*pow(y,2)) + pow(x,3)*(0.8 - 4.8*y + 4.8*pow(y,2)) + x*(0.4 - 2.4*y + 4.8*pow(y,2) - 4.8*pow(y,3) + 2.4*pow(y,4));
+
 		fxB = third*( fx1 + fx2 + fx3 );
 		fyB = third*( fy1 + fy2 + fy3 );
 		
+//		***************Font of the Galerkin formulation********************
 		f1 = rho*third*Area*fxB;
 		f2 = rho*third*Area*fyB;
+*/
+		f1 = f2 = fxB = fyB = 0.0;
 		
 		//*****************Font of the SUPG formulation**********************
 		fdelta1 = rho*tau*Area*C1*fxB;
@@ -432,16 +485,16 @@ int Build_K_F_SUPG_PSPG(ParametersType *Parameters, MatrixDataType *MatrixData, 
 		Gv[4] = 0.5*p*y12;
 		Gv[5] = 0.5*p*x21;
 
-		GTv[0] = third*Area*( duxdx + duydy);
-		GTv[1] = third*Area*( duxdx + duydy);
-		GTv[2] = third*Area*( duxdx + duydy);
-
 		Gdeltav[0] = tau*Area*C1*dpdx;
 		Gdeltav[1] = tau*Area*C1*dpdy;
 		Gdeltav[2] = tau*Area*C2*dpdx;
 		Gdeltav[3] = tau*Area*C2*dpdy;
 		Gdeltav[4] = tau*Area*C3*dpdx;
 		Gdeltav[5] = tau*Area*C3*dpdy;
+		
+		GTv[0] = third*Area*( duxdx + duydy);
+		GTv[1] = third*Area*( duxdx + duydy);
+		GTv[2] = third*Area*( duxdx + duydy);
 		
 		Nphiv[0] = 0.5*tau*(( duxdx*ux + duxdy*uy )*y23 + ( duydx*ux + duydy*uy )*x32);
 		Nphiv[1] = 0.5*tau*(( duxdx*ux + duxdy*uy )*y31 + ( duydx*ux + duydy*uy )*x13);
@@ -465,7 +518,7 @@ int Build_K_F_SUPG_PSPG(ParametersType *Parameters, MatrixDataType *MatrixData, 
 				
 		//**********************Tangent matrix*******************************
 				
-		if(varglobal < 50000){ //varglobal (<5 ISI, Ponto Fixo) (>=5 NI. Met. de Newton)
+		if(varglobal < 5){ //varglobal (<5 ISI, Ponto Fixo) (>=5 NI. Met. de Newton)
 
 			Ke[0][0] = N11 + Ndelta11 + K11 + Ks11;
 			Ke[0][1] =       K12 + Ks12;
@@ -506,7 +559,7 @@ int Build_K_F_SUPG_PSPG(ParametersType *Parameters, MatrixDataType *MatrixData, 
 			Ke[3][6] = N15 + Ndelta35 + K35 + Ks35;
 			Ke[3][7] = 		   K36 + Ks36;
 			Ke[3][8] = -( GT13 + Gdelta33 );
-
+	
 			Ke[4][0] = 		  K14 + Ks41;
 			Ke[4][1] = N11 + Ndelta24 + K24 + Ks42;
 			Ke[4][2] = -( GT14 + Gdelta41 );
@@ -516,7 +569,7 @@ int Build_K_F_SUPG_PSPG(ParametersType *Parameters, MatrixDataType *MatrixData, 
 			Ke[4][6] = 		  K45 + Ks45;
 			Ke[4][7] = N15 + Ndelta46 + K46 + Ks46;
 			Ke[4][8] = -( GT14 + Gdelta43 );
-
+	
 			Ke[5][0] = GT11 + Gdelta12;
 			Ke[5][1] = GT12 + Gdelta22;
 			Ke[5][2] = Gphi12;
@@ -526,7 +579,7 @@ int Build_K_F_SUPG_PSPG(ParametersType *Parameters, MatrixDataType *MatrixData, 
 			Ke[5][6] = GT15 + Gdelta52;
 			Ke[5][7] = GT16 + Gdelta62;
 			Ke[5][8] = Gphi23;
-
+	
 			Ke[6][0] = N11 + Ndelta15 + K15 + Ks51;
 			Ke[6][1] =       K25 + Ks52;
 			Ke[6][2] = -( GT15 + Gdelta51 );
@@ -588,7 +641,7 @@ int Build_K_F_SUPG_PSPG(ParametersType *Parameters, MatrixDataType *MatrixData, 
 			Ke[2][6] = GT15 + Gdelta51 + Npphi11;
 			Ke[2][7] = GT16 + Gdelta61 + Npphi12;
 			Ke[2][8] = Gphi13;
-
+	
 			Ke[3][0] = N11 + Np31 + Ndelta13 + Npdelta31 + Nppdelta31 + K13 + Ks31;
 			Ke[3][1] =       Np32 			 + Npdelta32 + Nppdelta32 + K23 + Ks32;
 			Ke[3][2] = -( GT13 + Gdelta31 );
@@ -598,7 +651,7 @@ int Build_K_F_SUPG_PSPG(ParametersType *Parameters, MatrixDataType *MatrixData, 
 			Ke[3][6] = N15 + Np31 + Ndelta35 + Npdelta31 + Nppdelta31 + K35 + Ks35;
 			Ke[3][7] = 		 Np32 	 		 + Npdelta32 + Nppdelta32 + K36 + Ks36;
 			Ke[3][8] = -( GT13 + Gdelta33 );
-
+	
 
 			Ke[4][0] = 		 Np41            + Npdelta41 + Nppdelta41 + K14 + Ks41;
 			Ke[4][1] = N11 + Np42 + Ndelta24 + Npdelta42 + Nppdelta42 + K24 + Ks42;
@@ -609,7 +662,7 @@ int Build_K_F_SUPG_PSPG(ParametersType *Parameters, MatrixDataType *MatrixData, 
 			Ke[4][6] = 		 Np41 			 + Npdelta41 + Nppdelta41 + K45 + Ks45;
 			Ke[4][7] = N15 + Np42 + Ndelta46 + Npdelta42 + Nppdelta42 + K46 + Ks46;
 			Ke[4][8] = -( GT14 + Gdelta43 );
-
+	
 			Ke[5][0] = GT11 + Gdelta12 + Npphi21;
 			Ke[5][1] = GT12 + Gdelta22 + Npphi22;
 			Ke[5][2] = Gphi12;
@@ -619,7 +672,7 @@ int Build_K_F_SUPG_PSPG(ParametersType *Parameters, MatrixDataType *MatrixData, 
 			Ke[5][6] = GT15 + Gdelta52 + Npphi21;
 			Ke[5][7] = GT16 + Gdelta62 + Npphi22;
 			Ke[5][8] = Gphi23;
-
+	
 			Ke[6][0] = N11 + Np31 + Ndelta15 + Npdelta51 + Nppdelta51 + K15 + Ks51;
 			Ke[6][1] =       Np32 			 + Npdelta52 + Nppdelta52 + K25 + Ks52;
 			Ke[6][2] = -( GT15 + Gdelta51 );
@@ -650,6 +703,7 @@ int Build_K_F_SUPG_PSPG(ParametersType *Parameters, MatrixDataType *MatrixData, 
 			Ke[8][7] = GT16 + Gdelta63 + Npphi32;
 			Ke[8][8] = Gphi33;
 		}
+
 
 		// Assemble global do vetor independente F de Au=F 
 		for (i = 0; i < 9; i++)

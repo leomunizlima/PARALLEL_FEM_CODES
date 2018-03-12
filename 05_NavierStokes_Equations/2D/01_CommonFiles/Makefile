@@ -1,8 +1,8 @@
 CC=mpicc
 #CC=tau_cc.sh
 IDIR=
-CFLAGS= -DSSNavierStokesEquations2D -Ddebug -c -lm -lrt -Wall -Ofast -march=native
-GCFLAGS= -DSSNavierStokesEquations2D -Ddebug -lm -lrt -Wall -Ofast -march=native ../../../00_CommonFiles/Reordering/hsl_mc73/hsl_mc73d.o \
+CFLAGS= -DNavierStokesEquations2D -Ddebug -c -lm -lrt -Wall -Ofast -march=native
+GCFLAGS= -DNavierStokesEquations2D -Ddebug -lm -lrt -Wall -Ofast -march=native ../../../00_CommonFiles/Reordering/hsl_mc73/hsl_mc73d.o \
 ../../../00_CommonFiles/Reordering/hsl_mc73/libhsl_mc73.a ../../../00_CommonFiles/Reordering/hsl_mc60/libmc60.a \
 -I/opt/openmpi/include -L/opt/openmpi/lib -lmpi -libverbs -Wl,--export-dynamic \
 -lnsl -lutil -ldl -L/usr/local/lib -lgfortran -L ../../../00_CommonFiles/Solvers_and_Preconditioners/pardiso -lpardiso500-GNU481-X86-64 \
@@ -31,18 +31,12 @@ Build_K_F_VMS_DCDD.c \
 ../CAVITY/CAVITY_v1presc.c \
 ../CAVITY/CAVITY_v2presc.c \
 ../CAVITY/CAVITY_ppresc.c \
-../CAVITY/CAVITY_f1ext.c \
-../CAVITY/CAVITY_f2ext.c \
 ../CHANNEL/CHANNEL_v1presc.c \
 ../CHANNEL/CHANNEL_v2presc.c \
 ../CHANNEL/CHANNEL_ppresc.c \
-../CHANNEL/CHANNEL_f1ext.c \
-../CHANNEL/CHANNEL_f2ext.c \
 ../EXATA/EXATA_v1presc.c \
 ../EXATA/EXATA_v2presc.c \
 ../EXATA/EXATA_ppresc.c \
-../EXATA/EXATA_f1ext.c \
-../EXATA/EXATA_f2ext.c \
 ../../../00_CommonFiles/CPU_Time_Operations/calculateTime.c \
 ../../../00_CommonFiles/IO_Operations/myfopen.c \
 ../../../00_CommonFiles/Allocation_Operations/mycalloc.c \
@@ -71,20 +65,20 @@ Build_K_F_VMS_DCDD.c \
 ../../../00_CommonFiles/Reordering/symrcm.c \
 
 OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=SSNavierStokesEquations2D
+EXECUTABLE=NavierStokesEquations2D
 
 all: $(SOURCES) $(EXECUTABLE)
 
-debug: CFLAGS= -DSSNavierStokesEquations2D -g -Ddebug -c -lm -lrt -Wall
-debug: GCFLAGS= -DSSNavierStokesEquations2D -g -Ddebug -lm -lrt -Wall ../../../00_CommonFiles/Reordering/hsl_mc73/hsl_mc73d.o \
+debug: CFLAGS= -DNavierStokesEquations2D -g -Ddebug -c -lm -lrt -Wall
+debug: GCFLAGS= -DNavierStokesEquations2D -g -Ddebug -lm -lrt -Wall ../../../00_CommonFiles/Reordering/hsl_mc73/hsl_mc73d.o \
 ../../../00_CommonFiles/Reordering/hsl_mc73/libhsl_mc73.a ../../../00_CommonFiles/Reordering/hsl_mc60/libmc60.a \
 -I/opt/openmpi/include -L/opt/openmpi/lib -lmpi -libverbs -Wl,--export-dynamic \
 -lnsl -lutil -ldl -L/usr/local/lib -lgfortran -L ../../../00_CommonFiles/Solvers_and_Preconditioners/pardiso -lpardiso500-GNU481-X86-64 \
 -lblas -llapack -lquadmath -fopenmp
 debug: all
 
-fast: CFLAGS= -DSSNavierStokesEquations2D -c -lm -lrt -Wall -Ofast -march=native
-fast: GCFLAGS= -DSSNavierStokesEquations2D -lm -lrt -Wall -Ofast -march=native ../../../00_CommonFiles/Reordering/hsl_mc73/hsl_mc73d.o \
+fast: CFLAGS= -DNavierStokesEquations2D -c -lm -lrt -Wall -Ofast -march=native
+fast: GCFLAGS= -DNavierStokesEquations2D -lm -lrt -Wall -Ofast -march=native ../../../00_CommonFiles/Reordering/hsl_mc73/hsl_mc73d.o \
 ../../../00_CommonFiles/Reordering/hsl_mc73/libhsl_mc73.a ../../../00_CommonFiles/Reordering/hsl_mc60/libmc60.a \
 -I/opt/openmpi/include -L/opt/openmpi/lib -lmpi -libverbs -Wl,--export-dynamic \
 -lnsl -lutil -ldl -L/usr/local/lib -lgfortran -L ../../../00_CommonFiles/Solvers_and_Preconditioners/pardiso -lpardiso500-GNU481-X86-64 \

@@ -1,4 +1,4 @@
-#include "SSNavierStokesEquations.h"
+#include "NavierStokesEquations.h"
 #include "../../../00_CommonFiles/Allocation_Operations/allocations.h"
 #include "../../../00_CommonFiles/IO_Operations/io.h"
 

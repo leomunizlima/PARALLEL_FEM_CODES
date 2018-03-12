@@ -1,5 +1,5 @@
-#ifndef SSNavierStokesEquations_h
-#define SSNavierStokesEquations_h
+#ifndef NavierStokesEquations_h
+#define NavierStokesEquations_h
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -156,8 +156,6 @@ typedef struct
 	double (*v1presc)(double, double);
 	double (*v2presc)(double, double);
 	double (*ppresc)(double, double);
-	double (*f1ext)(double, double);
-	double (*f2ext)(double, double);
 	void (*assembly)(ParametersType *, MatrixDataType *, FemStructsType *, int, double (*)[9]);
 	int (*mv)(ParametersType *, MatrixDataType *, FemStructsType *, double *, double *);
 	int (*precond)(ParametersType *, MatrixDataType *, FemStructsType *, double *, double *);

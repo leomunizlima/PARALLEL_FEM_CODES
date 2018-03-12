@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+#$ -cwd
+#$ -j y
+#$ -S /bin/bash
+#
+LD_LIBRARY_PATH=../../../00_CommonFiles/Solvers_and_Preconditioners/pardiso:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH
+OMP_NUM_THREADS=$3
+export OMP_NUM_THREADS
+MP_SHARED_MEMORY=yes
+export MP_SHARED_MEMORY
+mpirun -np $2 valgrind -v --track-origins=yes --leak-check=full ./SSNavierStokesEquations2D $1 
+
+

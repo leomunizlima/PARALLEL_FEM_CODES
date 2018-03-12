@@ -352,13 +352,24 @@ int setmark_according_boundary(int nnodes, double **coord, int *mark, char *prob
 		
 		NDOF = 3;
 		for(i=0;i<nnodes;i++){
-			if (fabs(coord[i][0]-1.0)<=1e-15 || fabs(coord[i][0])<=1e-15 || fabs(coord[i][1]-1.0)<=1e-15 ||fabs(coord[i][1])<=1e-15)
+			if (fabs(coord[i][0]-1.0)<=1e-15 || fabs(coord[i][0])<=1e-15 || fabs(coord[i][1])<=1e-15 ||fabs(coord[i][1]-1.5)<=1e-15)
 				mark[i] = 12;
 			else if (fabs(coord[i][0]-0.5)<=1e-15 && fabs(coord[i][1]-0.5)<=1e-15)
 				mark[i] = 2;
 			else
 				mark[i] = 0;
 		}
+	}else if(strcasecmp(problem,"CHANNEL") == 0){ 
+		
+		NDOF = 3;
+		for(i=0;i<nnodes;i++){
+			if (fabs(coord[i][0])<=1e-15 || fabs(coord[i][0]-30.0)<=1e-15 || fabs(coord[i][1])<=1e-15 ||fabs(coord[i][1]-1.5)<=1e-15
+		           || (fabs(coord[i][0]-7.5)<=1e-15 && coord[i][1]<=0.75) || (fabs(coord[i][1]-0.75)<=1e-15 && coord[i][0]<=7.5))
+				mark[i] = 12;
+			else
+				mark[i] = 0;
+		}
+
 
 	}else{
 		printf("Problem not defined!\n");
